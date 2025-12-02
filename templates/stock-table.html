@@ -1,0 +1,179 @@
+<script type="text/x-template" id="tpl-stock-table">
+    <div>
+        <h2 class="section-title">Stok Bahan Ajar</h2>
+
+        <div class="filters">
+            <select v-model="filter.upbjj">
+                <option value="">Semua UPBJJ</option>
+                <option v-for="u in upbjjList" :key="u">{{ u }}</option>
+            </select>
+
+            <select v-model="filter.kategori">
+                <option value="">Semua Kategori</option>
+                <option v-for="k in kategoriList" :key="k">{{ k }}</option>
+            </select>
+
+            <label class="checkbox">
+                <input type="checkbox" v-model="filter.menipis"> Menipis
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" v-model="filter.habis"> Habis
+            </label>
+
+            <button class="reset-btn" @click="resetFilter">Reset</button>
+        </div>
+
+        <div class="add-form">
+            <h3 class="form-title">Tambah Bahan Ajar</h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Kode</label>
+                    <input type="text" v-model="newItem.kode" placeholder="Kode">
+                </div>
+
+                <div class="form-group">
+                    <label>Judul</label>
+                    <input type="text" v-model="newItem.judul" placeholder="Judul">
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select v-model="newItem.kategori">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option v-for="k in kategoriList" :key="k">{{ k }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>UPBJJ</label>
+                    <select v-model="newItem.upbjj">
+                        <option value="">-- Pilih UPBJJ --</option>
+                        <option v-for="u in upbjjList" :key="u">{{ u }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Lokasi Rak</label>
+                    <input type="text" v-model="newItem.lokasiRak" placeholder="Contoh: R1-A3">
+                </div>
+
+                <div class="form-group">
+                    <label>Harga</label>
+                    <input type="number" v-model.number="newItem.harga" placeholder="Harga">
+                </div>
+
+                <div class="form-group">
+                    <label>Qty</label>
+                    <input type="number" v-model.number="newItem.qty" placeholder="Qty">
+                </div>
+
+                <div class="form-group">
+                    <label>Safety Stock</label>
+                    <input type="number" v-model.number="newItem.safety" placeholder="Safety">
+                </div>
+
+                <div class="form-full">
+                    <label>Catatan (HTML)</label>
+                    <textarea v-model="newItem.catatanHTML" placeholder="Contoh: <em>Edisi 2024</em>"></textarea>
+                </div>
+            </div>
+
+            <button class="submit-btn add-btn" @click="addStok">Tambah</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="stok-table">
+                <thead>
+                    <tr>
+                        <th @click="sortBy('kode')">Kode</th>
+                        <th @click="sortBy('judul')">Judul</th>
+                        <th>Kategori</th>
+                        <th>UPBJJ</th>
+                        <th>Rak</th>
+                        <th>Harga</th>
+                        <th @click="sortBy('qty')">Qty</th>
+                        <th>Safety</th>
+                        <th>Status</th>
+                        <th>Catatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="(b,i) in sortedData" :key="b.kode">
+                        <td>{{ b.kode }}</td>
+                        <td>{{ b.judul }}</td>
+                        <td>{{ b.kategori }}</td>
+                        <td>{{ b.upbjj }}</td>
+                        <td>{{ b.lokasiRak }}</td>
+                        <td>Rp {{ b.harga.toLocaleString() }}</td>
+                        <td>
+                            <input type="number" v-model.number="b.qty" @keyup.enter="updateQty(b)">
+                        </td>
+                        <td>{{ b.safety }}</td>
+                        <td>
+                            <status-badge :qty="b.qty" :safety="b.safety"></status-badge>
+                        </td>
+                        <td><span v-html="b.catatanHTML"></span></td>
+                        <td>
+                            <button class="edit-btn" @click="editItem(b)">Edit</button>
+                            <button class="del-btn" @click="deleteItem(b)">Hapus</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <app-modal v-if="modalOpen" @close="modalOpen=false">
+            <template #title>Konfirmasi Hapus</template>
+
+            <p>Yakin ingin menghapus <strong>{{ itemToDelete?.judul }}</strong>?</p>
+
+            <template #footer>
+                <button class="del-btn" @click="confirmDelete">Hapus</button>
+                <button class="reset-btn" @click="modalOpen=false">Batal</button>
+            </template>
+        </app-modal>
+
+        <app-modal v-if="editModal" @close="editModal=false">
+            <template #title>Edit Stok</template>
+
+            <div class="edit-form">
+                <label>Judul</label>
+                <input type="text" v-model="editItemData.judul" />
+
+                <label>Kategori</label>
+                <select v-model="editItemData.kategori">
+                    <option value="">-- Pilih Kategori --</option>
+                    <option v-for="k in kategoriList" :key="k">{{ k }}</option>
+                </select>
+
+                <label>UPBJJ</label>
+                <select v-model="editItemData.upbjj">
+                    <option value="">-- Pilih UPBJJ --</option>
+                    <option v-for="u in upbjjList" :key="u">{{ u }}</option>
+                </select>
+
+                <label>Lokasi Rak</label>
+                <input type="text" v-model="editItemData.lokasiRak" placeholder="Contoh: R1-A3">
+
+                <label>Harga</label>
+                <input type="number" v-model.number="editItemData.harga" placeholder="Harga">
+
+                <label>Safety</label>
+                <input type="number" v-model.number="editItemData.safety" />
+
+                <label>Catatan (HTML)</label>
+                <textarea v-model="editItemData.catatanHTML"></textarea>
+            </div>
+
+            <template #footer>
+                <button class="submit-btn" @click="saveEdit">Simpan</button>
+                <button class="reset-btn" @click="editModal = false">Batal</button>
+            </template>
+        </app-modal>
+    </div>
+</script>

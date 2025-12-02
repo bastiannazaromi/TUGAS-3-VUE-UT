@@ -1,0 +1,54 @@
+<script type="text/x-template" id="tpl-do-tracking">
+    <div>
+        <h2 class="section-title">Tracking Pengiriman</h2>
+
+        <div class="track-form">
+            <input type="text" v-model="nomorDO" placeholder="Masukkan Nomor DO (contoh: DO2025-0001)" @keyup.enter="cariDO">
+
+            <button @click="cariDO">Cari</button>
+            <button class="reset-btn" @click="resetCari">Reset</button>
+        </div>
+
+        <div v-if="error" class="msg-error">{{ error }}</div>
+
+        <div v-if="hasil" class="track-box">
+
+            <h3>Nomor DO: {{ nomorDO }}</h3>
+
+            <div class="progress-bar">
+                <div :class="['progress', statusClass]" :style="{width: progressWidth}">
+                    {{ hasil.status }}
+                </div>
+            </div>
+
+            <table class="detail-table">
+                <tr><td><strong>NIM</strong></td><td>{{ hasil.nim }}</td></tr>
+                <tr><td><strong>Nama</strong></td><td>{{ hasil.nama }}</td></tr>
+                <tr><td><strong>Ekspedisi</strong></td><td>{{ hasil.ekspedisi }}</td></tr>
+                <tr><td><strong>Tanggal Kirim</strong></td><td>{{ hasil.tanggalKirim }}</td></tr>
+                <tr><td><strong>Paket</strong></td><td>{{ hasil.paket }}</td></tr>
+                <tr><td><strong>Total Bayar</strong></td><td>Rp {{ hasil.total.toLocaleString() }}</td></tr>
+            </table>
+
+            <div class="perjalanan">
+                <h4>Riwayat Perjalanan:</h4>
+                <ul>
+                    <li v-for="(p, i) in hasil.perjalanan" :key="i">
+                        <strong>{{ p.waktu }}</strong> — {{ p.keterangan }}
+                    </li>
+                </ul>
+            </div>
+            <div class="add-perjalanan">
+
+            <h4>Tambah Riwayat Perjalanan:</h4>
+            <label>Waktu</label>
+            <input type="datetime-local" v-model="newTravel.waktu">
+
+            <label>Keterangan</label>
+            <input type="text" v-model="newTravel.keterangan" placeholder="Masukkan keterangan">
+
+            <button class="submit-btn" @click="addPerjalanan">Tambah</button>
+            </div>
+        </div>
+    </div>
+</script>

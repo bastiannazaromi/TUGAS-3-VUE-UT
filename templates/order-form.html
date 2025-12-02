@@ -1,0 +1,58 @@
+<script type="text/x-template" id="tpl-order-form">
+    <div>
+        <h2 class="section-title">Form Pemesanan Bahan Ajar</h2>
+
+        <div class="order-form">
+
+            <label>NIM</label>
+            <input type="text" v-model="form.nim" placeholder="Masukkan NIM">
+
+            <label>Nama Mahasiswa</label>
+            <input type="text" v-model="form.nama" placeholder="Masukkan Nama">
+
+            <label>Pilih Paket</label>
+            <select v-model="form.paket">
+                <option value="">-- Pilih Paket --</option>
+                <option v-for="p in paketList" :value="p.kode">{{ p.nama }}</option>
+            </select>
+
+            <div v-if="isiPaket.length" class="paket-box">
+                <strong>Isi Paket:</strong>
+                <ul>
+                    <li v-for="item in isiPaket" :key="item">{{ item }}</li>
+                </ul>
+            </div>
+
+            <label>Lokasi UPBJJ</label>
+            <select v-model="form.upbjj">
+                <option value="">-- Pilih Lokasi --</option>
+                <option v-for="u in upbjjList" :key="u">{{ u }}</option>
+            </select>
+
+            <label>Jenis Pengiriman</label>
+            <select v-model="form.pengiriman">
+                <option value="">-- Pilih Pengiriman --</option>
+                <option v-for="p in pengirimanList" :value="p.kode">
+                    {{ p.nama }}
+                </option>
+            </select>
+
+            <button class="submit-btn" @click="submitOrder">Kirim Pesanan</button>
+        </div>
+
+        <div v-if="result" class="do-result">
+            <h3>Pesanan Berhasil Dibuat!</h3>
+
+            <table class="detail-table">
+                <tr><td><strong>Nomor DO</strong></td><td>{{ result.do }}</td></tr>
+                <tr><td><strong>NIM</strong></td><td>{{ result.nim }}</td></tr>
+                <tr><td><strong>Nama</strong></td><td>{{ result.nama }}</td></tr>
+                <tr><td><strong>Paket</strong></td><td>{{ result.paket }}</td></tr>
+                <tr><td><strong>Tanggal Kirim</strong></td><td>{{ result.tanggal }}</td></tr>
+                <tr><td><strong>Pengiriman</strong></td><td>{{ result.pengiriman }}</td></tr>
+                <tr><td><strong>Total Harga</strong></td><td>Rp {{ result.total.toLocaleString() }}</td></tr>
+            </table>
+        </div>
+
+    </div>
+</script>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Tugas 3 | Vue.js</title>
+
+        <link rel="stylesheet" href="assets/css/style.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    </head>
+
+    <body>
+        <div id="app">
+            <nav class="navbar">
+                <div class="logo">Tugas 3</div>
+
+                <div class="menu-toggle" id="menuToggle">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+
+                <ul id="navbarMenu">
+                    <li><a href="#" @click="tab='stok'">Stok Bahan Ajar</a></li>
+                    <li>
+                        <a href="#" @click="tab='tracking'"
+                            >Tracking Pengiriman</a
+                        >
+                    </li>
+                    <li><a href="#" @click="tab='order'">Form Pemesanan</a></li>
+                </ul>
+            </nav>
+
+            <main>
+                <div class="greeting" id="greetingText"></div>
+
+                <ba-stock-table v-if="tab === 'stok'"></ba-stock-table>
+                <do-tracking v-if="tab === 'tracking'"></do-tracking>
+                <order-form v-if="tab === 'order'"></order-form>
+            </main>
+        </div>
+
+        <script src="js/template-loader.js"></script>
+
+        <script>
+            Promise.all([
+                TemplateLoader.load(
+                    "tpl-stock-table",
+                    "templates/stock-table.html"
+                ),
+                TemplateLoader.load(
+                    "tpl-do-tracking",
+                    "templates/do-tracking.html"
+                ),
+                TemplateLoader.load(
+                    "tpl-order-form",
+                    "templates/order-form.html"
+                ),
+                TemplateLoader.load(
+                    "tpl-app-modal",
+                    "templates/app-modal.html"
+                ),
+                TemplateLoader.load(
+                    "tpl-status-badge",
+                    "templates/status-badge.html"
+                ),
+            ]).then(() => {
+                const scripts = [
+                    "js/services/api.js",
+                    "js/components/status-badge.js",
+                    "js/components/app-modal.js",
+                    "js/components/stock-table.js",
+                    "js/components/do-tracking.js",
+                    "js/components/order-form.js",
+                    "js/app.js",
+                ];
+
+                scripts.forEach((src) => {
+                    const s = document.createElement("script");
+                    s.src = src;
+                    document.body.appendChild(s);
+                });
+            });
+        </script>
+
+        <script>
+            var jam = new Date().getHours();
+            var greet = "";
+            if (jam >= 5 && jam < 11) greet = "Selamat pagi ☀️";
+            else if (jam >= 11 && jam < 15) greet = "Selamat siang 🌤️";
+            else if (jam >= 15 && jam < 18) greet = "Selamat sore 🌇";
+            else greet = "Selamat malam 🌙";
+            document.getElementById("greetingText").innerText = greet;
+
+            const menuToggle = document.getElementById("menuToggle");
+            const navbarMenu = document.getElementById("navbarMenu");
+            menuToggle.addEventListener("click", () => {
+                navbarMenu.classList.toggle("show");
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,18 @@
+<script type="text/x-template" id="tpl-app-modal">
+    <div class="modal-overlay" @click.self="$emit('close')">
+        <div class="modal-box">
+            <div class="modal-header">
+                <slot name="title">Konfirmasi</slot>
+                <span class="modal-close" @click="$emit('close')">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <slot></slot>
+            </div>
+
+            <div class="modal-footer">
+                <slot name="footer"></slot>
+            </div>
+        </div>
+    </div>
+</script>
