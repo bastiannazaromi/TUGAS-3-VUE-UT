@@ -14,13 +14,13 @@
             <nav class="navbar">
                 <div class="logo">Tugas 3</div>
 
-                <div class="menu-toggle" id="menuToggle">
+                <div class="menu-toggle" @click="toggleMenu">
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
 
-                <ul id="navbarMenu">
+                <ul id="navbarMenu" :class="{ show: menuOpen }">
                     <li><a href="#" @click="tab='stok'">Stok Bahan Ajar</a></li>
                     <li>
                         <a href="#" @click="tab='tracking'"
@@ -91,12 +91,6 @@
             else if (jam >= 15 && jam < 18) greet = "Selamat sore 🌇";
             else greet = "Selamat malam 🌙";
             document.getElementById("greetingText").innerText = greet;
-
-            const menuToggle = document.getElementById("menuToggle");
-            const navbarMenu = document.getElementById("navbarMenu");
-            menuToggle.addEventListener("click", () => {
-                navbarMenu.classList.toggle("show");
-            });
         </script>
     </body>
 </html>
